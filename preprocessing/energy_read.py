@@ -102,8 +102,8 @@ def load_generate(name_list,area_list_org,year_list):
             if (new_year_list[i]>2003 and fnmatch.fnmatch(file1,'*'+new_name_list[i]+'*'+str(new_year_list[i])+'*')) or\
             (new_year_list[i]==1993 and fnmatch.fnmatch(file1,'*'+new_name_list[i]+'*DOE_Ref_1980-2004*')) or\
             (new_year_list[i]==1980 and fnmatch.fnmatch(file1,'*'+new_name_list[i]+'*DOE_Ref_Pre-1980*')):
-                load_array+=current_load*area_list[i]
-                load_array2+=current_load2*area_list[i]
+                load_array+=current_load*area_list[i]*0.092903
+                load_array2+=current_load2*area_list[i]*0.092903
                 remove_list.append(i)
         for i in range(len(remove_list)):
             new_name_list.pop(remove_list[len(remove_list)-i-1])
