@@ -119,6 +119,8 @@ def length(frame,time0,logic):
     #frame['Date/Time']=pd.to_datetime(frame['Date/Time'])
     #frame.set_index('Date/Time', inplace=True)
     #frame=frame.resample("D").mean()
+    if max(frame.net.values)==0 and min(frame.net.values)==0:
+        return 0
     frame['hour']=frame.index.values//(time0*3600)
     frame=frame.groupby(by="hour", dropna=False).mean()
     if logic:
