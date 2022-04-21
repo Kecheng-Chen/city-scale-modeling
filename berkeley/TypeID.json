@@ -1,0 +1,121 @@
+[{
+    "TypeId": 0,
+    "Occupancy": "Other/Unknown",
+    "ReplacementCost": {
+        "UnitCost": 137.5452,
+        "ContentsFactor": 0.5
+    }
+}, {
+    "TypeId": 1,
+    "Occupancy": "Residential",
+    "ReplacementCost": {
+        "UnitCost": 137.5452,
+        "ContentsFactor": 0.5
+    }
+}, {
+    "TypeId": 2,
+    "Occupancy": "Residential",
+    "ReplacementCost": {
+        "UnitCost": 137.5452,
+        "ContentsFactor": 0.5
+    }
+}, {
+    "TypeId": 3,
+    "Occupancy": "Residential",
+    "ReplacementCost": {
+        "UnitCost": 137.5452,
+        "ContentsFactor": 0.5
+    }
+}, {
+    "TypeId": 4,
+    "Occupancy": "Office",
+    "ReplacementCost": {
+        "UnitCost": 131.8863,
+        "ContentsFactor": 1.0
+    }
+}, {
+    "TypeId": 5,
+    "Occupancy": "Hotel",
+    "ReplacementCost": {
+        "UnitCost": 137.271225,
+        "ContentsFactor": 0.5
+    }
+}, {
+    "TypeId": 6,
+    "Occupancy": "School",
+    "ReplacementCost": {
+        "UnitCost": 142.134265,
+        "ContentsFactor": 1.25
+    }
+}, {
+    "TypeId": 7,
+    "Occupancy": "Industrial",
+    "ReplacementCost": {
+        "UnitCost": 97.5247,
+        "ContentsFactor": 1.5
+    }
+}, {
+    "TypeId": 8,
+    "Occupancy": "Industrial",
+    "ReplacementCost": {
+        "UnitCost": 85.9586,
+        "ContentsFactor": 1.5
+    }
+}, {
+    "TypeId": 9,
+    "Occupancy": "Industrial",
+    "ReplacementCost": {
+        "UnitCost": 104.033475,
+        "ContentsFactor": 1.5
+    }
+}, {
+    "TypeId": 10,
+    "Occupancy": "Retail",
+    "ReplacementCost": {
+        "UnitCost": 105.33705,
+        "ContentsFactor": 1.0
+    }
+}, {
+    "TypeId": 11,
+    "Occupancy": "Retail",
+    "ReplacementCost": {
+        "UnitCost": 105.33705,
+        "ContentsFactor": 0.5
+    }
+}, {
+    "TypeId": 12,
+    "Occupancy": "Residential",
+    "ReplacementCost": {
+        "UnitCost": 137.5452,
+        "ContentsFactor": 0.5
+    }
+}, {
+    "TypeId": 13,
+    "Occupancy": "Retail",
+    "ReplacementCost": {
+        "UnitCost": 105.33705,
+        "ContentsFactor": 1.0
+    }
+}, {
+    "TypeId": 14,
+    "Occupancy": "Office",
+    "ReplacementCost": {
+        "UnitCost": 131.8863,
+        "ContentsFactor": 1.0
+    }
+}, {
+    "TypeId": 15,
+    "Occupancy": "Parking",
+    "ReplacementCost": {
+        "UnitCost": 137.5452,
+        "ContentsFactor": 0.5
+    }
+}, {
+    "TypeId": 16,
+    "Occupancy": "Parking",
+    "ReplacementCost": {
+        "UnitCost": 137.5452,
+        "ContentsFactor": 0.5
+    }
+}
+]
