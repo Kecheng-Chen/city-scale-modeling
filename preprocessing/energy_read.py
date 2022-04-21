@@ -50,21 +50,21 @@ def load_generate(name_list,area_list_org,year_list):
         return name_list[closest(area_list, area)]
     name_dict={'Retail':'RetailStandalone','Industrial':'Warehouse','School':which_school,'Hotel':which_hotel,\
                'Office':which_office,'Residential':which_residential}
-    year_dict={'FullServiceRestaurant': [2004, 2007, 2010, 2013, 2004, 1980],
+    year_dict={'FullServiceRestaurant': [2004, 2007, 2010, 2013, 1993, 1980],
  'HighriseApartment': [2004, 2007, 2010],
- 'Hospital': [2004, 2007, 2010, 2013, 2004, 1980],
- 'LargeHotel': [2004, 2007, 2010, 2013, 2004, 1980],
- 'LargeOffice': [2004, 2007, 2010, 2013, 2004, 1980],
- 'MediumOffice': [2004, 2007, 2010, 2013, 2004, 1980],
- 'MidriseApartment': [2004, 2007, 2010, 2013, 2004, 1980],
- 'PrimarySchool': [2004, 2007, 2010, 2013, 2004, 1980],
- 'QuickServiceRestaurant': [2004, 2007, 2010, 2013, 2004, 1980],
+ 'Hospital': [2004, 2007, 2010, 2013, 1993, 1980],
+ 'LargeHotel': [2004, 2007, 2010, 2013, 1993, 1980],
+ 'LargeOffice': [2004, 2007, 2010, 2013, 1993, 1980],
+ 'MediumOffice': [2004, 2007, 2010, 2013, 1993, 1980],
+ 'MidriseApartment': [2004, 2007, 2010, 2013, 1993, 1980],
+ 'PrimarySchool': [2004, 2007, 2010, 2013, 1993, 1980],
+ 'QuickServiceRestaurant': [2004, 2007, 2010, 2013, 1993, 1980],
  'RetailStandalone': [2004, 2007, 2010, 2013],
- 'RetailStripmall': [2004, 2007, 2010, 2013, 2004, 1980],
- 'SecondarySchool': [2004, 2007, 2010, 2013, 2004, 1980],
- 'SmallHotel': [2004, 1980],
- 'SmallOffice': [2004, 2007, 2010, 2013, 2004, 1980],
- 'Warehouse': [2004, 2007, 2010, 2013, 2004, 1980]}
+ 'RetailStripmall': [2004, 2007, 2010, 2013, 1993, 1980],
+ 'SecondarySchool': [2004, 2007, 2010, 2013, 1993, 1980],
+ 'SmallHotel': [1993, 1980],
+ 'SmallOffice': [2004, 2007, 2010, 2013, 1993, 1980],
+ 'Warehouse': [2004, 2007, 2010, 2013, 1993, 1980]}
     new_name_list=[]
     new_year_list=[]
     index=0
@@ -79,35 +79,36 @@ def load_generate(name_list,area_list_org,year_list):
                 new_name_list.append(name_dict[name](area_list[index]))
         index+=1
     index=0
+    
     for new_name in new_name_list:
         if new_name==None:
             new_year_list.append(None)
         else:
             new_year_list.append(year_dict[new_name][closest(year_dict[new_name],year_list[index])])
         index+=1
+    
     list1=glob.glob("../base loads/*.csv")
     load_array=np.zeros((1,8760))
     load_array2=np.zeros((1,8760))
-    new_name_list.remove(None)
-    new_year_list.remove(None)
-    area_list.remove(None)
+    while None in new_name_list:
+        new_name_list.remove(None)
+        new_year_list.remove(None)
+        area_list.remove(None)
     for file1 in list1:
         current_load=pd.read_csv(file1,sep="\t",index_col=0)['SH(W/m2)'].values
         current_load2=pd.read_csv(file1,sep="\t",index_col=0)['SC(W/m2)'].values
-        remove_list1=[]
-        remove_list2=[]
-        remove_list3=[]
+        remove_list=[]
         for i in range(len(new_name_list)):
-            if fnmatch.fnmatch(file1,'*'+new_name_list[i]+'*'+str(new_year_list[i])+'*'):
+            if (new_year_list[i]>2003 and fnmatch.fnmatch(file1,'*'+new_name_list[i]+'*'+str(new_year_list[i])+'*')) or\
+            (new_year_list[i]==1993 and fnmatch.fnmatch(file1,'*'+new_name_list[i]+'*DOE_Ref_1980-2004*')) or\
+            (new_year_list[i]==1980 and fnmatch.fnmatch(file1,'*'+new_name_list[i]+'*DOE_Ref_Pre-1980*')):
                 load_array+=current_load*area_list[i]
                 load_array2+=current_load2*area_list[i]
-                remove_list1.append(new_name_list[i])
-                remove_list2.append(new_year_list[i])
-                remove_list3.append(area_list[i])
-        for i in range(len(remove_list1)):
-            new_name_list.remove(remove_list1[i])
-            new_year_list.remove(remove_list2[i])
-            area_list.remove(remove_list3[i])
+                remove_list.append(i)
+        for i in range(len(remove_list)):
+            new_name_list.pop(remove_list[len(remove_list)-i-1])
+            new_year_list.pop(remove_list[len(remove_list)-i-1])
+            area_list.pop(remove_list[len(remove_list)-i-1])
         if new_name_list==[]:
             break
     time_array=pd.read_csv(file1,sep="\t",index_col=0)['time'].values
