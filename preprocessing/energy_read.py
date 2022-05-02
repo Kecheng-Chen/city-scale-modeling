@@ -33,40 +33,16 @@ def load_generate(name_list,area_list_org,year_list):
         idx = (np.abs(lst - K)).argmin()
         return idx
     def which_school(area):
-        area_list=[73960,210900]
-        name_list=['PrimarySchool','SecondarySchool']
-        return name_list[closest(area_list, area)]
-    def which_hotel(area):
-        area_list=[43200,122132]
-        name_list=['SmallHotel','LargeHotel']
+        area_list=[75000.0,166666.66666666666]
+        name_list=['PS','SS']
         return name_list[closest(area_list, area)]
     def which_office(area):
-        area_list=[5500,53600,498600]
-        name_list=['SmallOffice','MediumOffice','LargeOffice']
+        area_list=[350000.0,87500.0,10473.684210526315]
+        name_list=['LO','MO','SO']
         return name_list[closest(area_list, area)]
-    def which_residential(area):
-        area_list=[33700,84360]
-        name_list=['MidriseApartment','HighriseApartment']
-        return name_list[closest(area_list, area)]
-    name_dict={'Retail':'RetailStandalone','Industrial':'Warehouse','School':which_school,'Hotel':which_hotel,\
-               'Office':which_office,'Residential':which_residential}
-    year_dict={'FullServiceRestaurant': [2004, 2007, 2010, 2013, 1993, 1980],
- 'HighriseApartment': [2004, 2007, 2010],
- 'Hospital': [2004, 2007, 2010, 2013, 1993, 1980],
- 'LargeHotel': [2004, 2007, 2010, 2013, 1993, 1980],
- 'LargeOffice': [2004, 2007, 2010, 2013, 1993, 1980],
- 'MediumOffice': [2004, 2007, 2010, 2013, 1993, 1980],
- 'MidriseApartment': [2004, 2007, 2010, 2013, 1993, 1980],
- 'PrimarySchool': [2004, 2007, 2010, 2013, 1993, 1980],
- 'QuickServiceRestaurant': [2004, 2007, 2010, 2013, 1993, 1980],
- 'RetailStandalone': [2004, 2007, 2010, 2013],
- 'RetailStripmall': [2004, 2007, 2010, 2013, 1993, 1980],
- 'SecondarySchool': [2004, 2007, 2010, 2013, 1993, 1980],
- 'SmallHotel': [1993, 1980],
- 'SmallOffice': [2004, 2007, 2010, 2013, 1993, 1980],
- 'Warehouse': [2004, 2007, 2010, 2013, 1993, 1980]}
+    name_dict={'Retail':'Rstand','Industrial':'WH','School':which_school,'Hotel':'LH',\
+               'Office':which_office,'Residential':'Res'}
     new_name_list=[]
-    new_year_list=[]
     index=0
     for name in name_list:
         if name=='Other/Unknown' or name=='Parking':
@@ -78,39 +54,31 @@ def load_generate(name_list,area_list_org,year_list):
             else:
                 new_name_list.append(name_dict[name](area_list[index]))
         index+=1
-    index=0
     
-    for new_name in new_name_list:
-        if new_name==None:
-            new_year_list.append(None)
-        else:
-            new_year_list.append(year_dict[new_name][closest(year_dict[new_name],year_list[index])])
-        index+=1
-    
-    list1=glob.glob("../base loads/*.csv")
-    load_array=np.zeros((1,8760))
-    load_array2=np.zeros((1,8760))
+    list1=glob.glob("../result loads/*.csv")
+    load_array=np.zeros((1,35040))
+    load_array2=np.zeros((1,35040))
     while None in new_name_list:
         new_name_list.remove(None)
-        new_year_list.remove(None)
         area_list.remove(None)
     for file1 in list1:
-        current_load=pd.read_csv(file1,sep="\t",index_col=0)['SH(W/m2)'].values
-        current_load2=pd.read_csv(file1,sep="\t",index_col=0)['SC(W/m2)'].values
+        current_load=pd.read_csv(file1,sep="\t",index_col=0)['cooling'].values
+        current_load2=pd.read_csv(file1,sep="\t",index_col=0)['heating'].values
         remove_list=[]
         for i in range(len(new_name_list)):
-            if (new_year_list[i]>2003 and fnmatch.fnmatch(file1,'*'+new_name_list[i]+'*'+str(new_year_list[i])+'*')) or\
-            (new_year_list[i]==1993 and fnmatch.fnmatch(file1,'*'+new_name_list[i]+'*DOE_Ref_1980-2004*')) or\
-            (new_year_list[i]==1980 and fnmatch.fnmatch(file1,'*'+new_name_list[i]+'*DOE_Ref_Pre-1980*')):
-                load_array+=current_load*area_list[i]*0.092903
-                load_array2+=current_load2*area_list[i]*0.092903
+            if file1.split('\\')[1]==new_name_list[i]+'.csv':
+                load_array+=current_load*area_list[i]
+                load_array2+=current_load2*area_list[i]
                 remove_list.append(i)
         for i in range(len(remove_list)):
             new_name_list.pop(remove_list[len(remove_list)-i-1])
-            new_year_list.pop(remove_list[len(remove_list)-i-1])
             area_list.pop(remove_list[len(remove_list)-i-1])
         if new_name_list==[]:
             break
+    if new_name_list==[]:
+        print("Correct")
+    else:
+        print("Error")
     time_array=pd.read_csv(file1,sep="\t",index_col=0)['time'].values
     return time_array,load_array,load_array2
 
@@ -123,11 +91,6 @@ def length(frame,time0,logic):
         return 0
     frame['hour']=frame.index.values//(time0*3600)
     frame=frame.groupby(by="hour", dropna=False).mean()
-    if logic:
-        temp_heat=frame['net'][frame['net']>0]
-        frame['net'][frame['net']>0]=one_standrad(temp_heat)
-        temp_heat=frame['net'][frame['net']<0]
-        frame['net'][frame['net']<0]=three_standrad(temp_heat)
     #frame.plot()
     #print(frame.index.values)
     
@@ -137,16 +100,29 @@ def length(frame,time0,logic):
     Ql_4 = frame
     PLFm['Heating'] = PLFm['net'] / Ql_4['net'].min()
     PLFm['Cooling'] = PLFm['net'] / Ql_4['net'].max()
-    diff=frame['net'].values
-    sum_pos = -diff[diff>0].sum()*time0
-    sum_neg = -diff[diff<0].sum()*time0
+    if Ql_4['net'].min()>0:
+        print('Error: minimum load larger than 0')
+    diff = PLFm['Cooling'] * Ql_4['net'].max()
+    diff2 = PLFm['Heating'] * Ql_4['net'].min()
+    sum_pos = -diff[diff>0].sum()*31*24
+    sum_neg = -diff2[diff2<0].sum()*31*24
     qa=(sum_pos+sum_neg)/8760
     max_PLFm = dict(
         Cooling=PLFm.loc[PLFm.Cooling==PLFm.Cooling.max(), 'Cooling'].values[0],
         Heating=PLFm.loc[PLFm.Heating==PLFm.Heating.max(), 'Heating'].values[0],
     )
-    Lc=(qa*0.157+(-frame['net'].max() *(0.12+max_PLFm['Cooling']*0.14+1.04*0.099)))/(14.4-(25+30)/2)
-    Lh=(qa*0.157+(-frame['net'].min() *(0.12+max_PLFm['Heating']*0.14+1.04*0.099)))/(14.4-(8+3)/2)
+    Lc=(qa*0.157+(-frame['net'].max() *(0.12+max_PLFm['Cooling']*0.14+1.04*0.099)))/(18.4-(25+30)/2)
+    Lh=(qa*0.157+(-frame['net'].min() *(0.12+max_PLFm['Heating']*0.14+1.04*0.099)))/(18.4-(8+3)/2)
+    j=0
+    while Lh>Lc and j<20:
+        PLFm['Heating'] = PLFm['Heating'] *(1-(Lh-Lc)/(2*Lh))
+        max_PLFm['Heating'] = max_PLFm['Heating'] *(1-(Lh-Lc)/(2*Lh))
+        diff2 = PLFm['Heating'] * Ql_4['net'].min()
+        sum_neg = -diff2[diff2<0].sum()*31*24
+        qa=(sum_pos+sum_neg)/8760
+        Lc=(qa*0.157+(-frame['net'].max() *(0.12+max_PLFm['Cooling']*0.14+1.04*0.099)))/(18.4-(25+30)/2)
+        Lh=(qa*0.157+(-frame['net'].min() *(0.12+max_PLFm['Heating']*0.14+1.04*0.099)))/(18.4-(8+3)/2)
+        j+=1
     #print(max(Lc,Lh))
     return max(Lc,Lh)
     #return 0
@@ -154,7 +130,7 @@ def length(frame,time0,logic):
 def length_generate(name_list,area_list,year_list):
     time_array,load_array,load_array2=load_generate(name_list,area_list,year_list)
     net=load_array[0]*6.5/5.5+load_array2[0]*2.5/3.5
-    d = {'time': time_array, 'net': -net/1000}
+    d = {'time': time_array, 'net': -net}
     df = pd.DataFrame(data=d)
     df=df.set_index('time')
     return length(df,6,False)
