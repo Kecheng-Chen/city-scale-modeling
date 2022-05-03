@@ -66,7 +66,7 @@ def load_generate(name_list,area_list_org,year_list):
         current_load2=pd.read_csv(file1,sep="\t",index_col=0)['heating'].values
         remove_list=[]
         for i in range(len(new_name_list)):
-            if file1.split('\\')[1]==new_name_list[i]+'.csv':
+            if file1.split('/')[2]==new_name_list[i]+'.csv':
                 load_array+=current_load*area_list[i]
                 load_array2+=current_load2*area_list[i]
                 remove_list.append(i)
