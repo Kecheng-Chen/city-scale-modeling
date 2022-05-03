@@ -67,8 +67,8 @@ def load_generate(name_list,area_list_org,year_list):
         remove_list=[]
         for i in range(len(new_name_list)):
             if file1.split('/')[2]==new_name_list[i]+'.csv':
-                load_array+=current_load*area_list[i]
-                load_array2+=current_load2*area_list[i]
+                load_array+=current_load*area_list[i]*0.092903
+                load_array2+=current_load2*area_list[i]*0.092903
                 remove_list.append(i)
         for i in range(len(remove_list)):
             new_name_list.pop(remove_list[len(remove_list)-i-1])
@@ -102,10 +102,9 @@ def length(frame,time0,logic):
     PLFm['Cooling'] = PLFm['net'] / Ql_4['net'].max()
     if Ql_4['net'].min()>0:
         print('Error: minimum load larger than 0')
-    diff = PLFm['Cooling'] * Ql_4['net'].max()
-    diff2 = PLFm['Heating'] * Ql_4['net'].min()
-    sum_pos = -diff[diff>0].sum()*31*24
-    sum_neg = -diff2[diff2<0].sum()*31*24
+    diff=frame['net'].values
+    sum_pos = -diff[diff>0].sum()*time0
+    sum_neg = -diff[diff<0].sum()*time0
     qa=(sum_pos+sum_neg)/8760
     max_PLFm = dict(
         Cooling=PLFm.loc[PLFm.Cooling==PLFm.Cooling.max(), 'Cooling'].values[0],
@@ -123,7 +122,7 @@ def length(frame,time0,logic):
         Lc=(qa*0.157+(-frame['net'].max() *(0.12+max_PLFm['Cooling']*0.14+1.04*0.099)))/(18.4-(25+30)/2)
         Lh=(qa*0.157+(-frame['net'].min() *(0.12+max_PLFm['Heating']*0.14+1.04*0.099)))/(18.4-(8+3)/2)
         j+=1
-    #print(max(Lc,Lh))
+    # print(Lc,Lh)
     return max(Lc,Lh)
     #return 0
 
